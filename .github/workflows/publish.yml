@@ -15,8 +15,7 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v3
       - name: List kubernetes files in the repository
-        run: |
-          find kubernetes/*  -type f -print | sort | xargs -I{} sh -c "cat {}; echo '---'" >config.yaml
+        run: ./build/joinFiles.sh config.yaml
       - name: debug
         run: |
           cat config.yaml
@@ -30,7 +29,7 @@ jobs:
     permissions:
       contents: write
     steps:
-    - name: Download math result for job 1
+    - name: Download assembled configuration file
       uses: actions/download-artifact@v3
       with:
         name: configuration-file
@@ -39,5 +38,4 @@ jobs:
     - uses: ncipollo/release-action@v1
       with:
         artifacts: "config.yaml"
-        # bodyFile: "body.md"
         token: ${{ secrets.GITHUB_TOKEN }}
