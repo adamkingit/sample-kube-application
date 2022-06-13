@@ -1,0 +1,22 @@
+name: Build Kubernetes Sample
+on:
+  push:
+    branches:
+      - '*'
+  workflow_call:
+  pull_request:
+    branches:
+      - $default-branch
+jobs:
+  validate-yaml:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: download-kube-eval
+        run: curl -L --silent --show-error https://github.com/instrumenta/kubeval/releases/latest/download/kubeval-linux-amd64.tar.gz |tar zxv
+      - name: run-kube-eval
+        run: ./kubeval --strict kubernetes/*.yaml
+      - name: List kubernetes files in the repository
+        run: |
+          find kubernetes/ -type f | sort

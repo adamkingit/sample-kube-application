@@ -1,0 +1,43 @@
+name: Publish Kubernetes Sample
+on:
+  push:
+    tags:
+    - 'v*'
+
+jobs:
+  validate_workflow_job:
+    name: Validate
+    uses: ./.github/workflows/validate.yml
+  assemble-yaml:
+    runs-on: ubuntu-latest
+    needs: validate_workflow_job
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: List kubernetes files in the repository
+        run: |
+          find kubernetes/*  -type f -print | sort | xargs -I{} sh -c "cat {}; echo '---'" >config.yaml
+      - name: debug
+        run: |
+          cat config.yaml
+      - uses: actions/upload-artifact@v3
+        with:
+          name: configuration-file
+          path: config.yaml
+  publish:
+    runs-on: ubuntu-latest
+    needs: assemble-yaml
+    permissions:
+      contents: write
+    steps:
+    - name: Download math result for job 1
+      uses: actions/download-artifact@v3
+      with:
+        name: configuration-file
+    - name: debug
+      run: cat config.yaml
+    - uses: ncipollo/release-action@v1
+      with:
+        artifacts: "config.yaml"
+        # bodyFile: "body.md"
+        token: ${{ secrets.GITHUB_TOKEN }}
