@@ -3,6 +3,8 @@ kind: ConfigMap
 metadata:
   name: configmap-2
   namespace: default
+  annotations:
+    version: "{{ env['VERSION'] }}"
   labels:
     razee/watch-resource: "lite"
 data:
