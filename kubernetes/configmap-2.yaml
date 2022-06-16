@@ -3,6 +3,8 @@ kind: ConfigMap
 metadata:
   name: configmap-2
   namespace: default
+  labels:
+    razee/watch-resource: "lite"
 data:
   key1: "1"
   key2: "2"
